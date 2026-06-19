@@ -39,11 +39,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Verificar se temos as informações necessárias para conectar
-    if (
-      !instance.config ||
-      !instance.config.instanceName ||
-      !instance.instanceKey
-    ) {
+    const config = instance.config as { instanceName?: string } | null;
+    if (!config || !config.instanceName || !instance.instanceKey) {
       return NextResponse.json(
         { error: "Informações de configuração da instância incompletas" },
         { status: 400 }
