@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Token uazapi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Token uazapi</h1>
+    <p>Use esta página para testar se o seu token de administração da uazapi está funcionando corretamente.</p>
+    
+    <div class="form-group">
+        <label for="token">Token de Administração:</label>
+        <input type="text" id="token" placeholder="Insira o token de administração">
+    </div>
+    
+    <button onclick="testToken()">Testar Token</button>
+    
+    <h2>Resultado:</h2>
+    <div id="result">
+        <p>Nenhum teste realizado ainda.</p>
+    </div>
+    
+    <script>
+        async function testToken() {
+            const token = document.getElementById('token').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!token) {
+                resultDiv.innerHTML = '<p class="error">Por favor, insira um token.</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p>Testando token...</p>';
+            
+            try {
+                const response = await fetch('/api/uazapi/test-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.valid) {
+                    resultDiv.innerHTML = `
+                        <p class="success">Token válido!</p>
+                        <p>Status: ${data.status} ${data.statusText}</p>
+                        <h3>Resposta da API:</h3>
+                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">Token inválido!</p>
+                        <p>Status: ${data.status} ${data.statusText}</p>
+                        <h3>Resposta da API:</h3>
+                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">Erro ao testar token:</p>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
