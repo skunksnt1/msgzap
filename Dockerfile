@@ -1,6 +1,7 @@
 # ---------- Base ----------
 FROM node:20-alpine AS base
-RUN corepack enable
+# Fixa o pnpm (o "latest" do corepack exige Node 22+ e quebra no Node 20).
+RUN corepack enable && corepack prepare pnpm@10.34.4 --activate
 WORKDIR /app
 
 # ---------- Dependências ----------
